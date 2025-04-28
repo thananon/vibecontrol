@@ -1,25 +1,31 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import muteIcon from '../assets/icons/mute.svg';
 import shieldIcon from '../assets/icons/shield.svg';
 
-// Use the same key as ControlPage
-const LOCAL_STORAGE_KEY = 'vibecontrol_alert_status';
-
-type LocalStateType = 'normal' | 'mute' | 'suppress';
+type AlertStateType = 'normal' | 'mute' | 'suppress';
 
 const DisplayPage = () => {
-  const [displayStatus, setDisplayStatus] = useState<LocalStateType>(() => {
-    return (localStorage.getItem(LOCAL_STORAGE_KEY) as LocalStateType) || 'normal';
-  });
+  const [displayStatus, setDisplayStatus] = useState<AlertStateType>('normal');
 
   useEffect(() => {
-    // --- Listener for localStorage changes ---
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === LOCAL_STORAGE_KEY) {
-        setDisplayStatus((event.newValue as LocalStateType) || 'normal');
+    // Function to fetch the alert status from the server
+    const fetchAlertStatus = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/alerts/status');
+        if (response.data && response.data.status) {
+          setDisplayStatus(response.data.status);
+        }
+      } catch (error) {
+        console.error('Error fetching alert status:', error);
       }
     };
-    window.addEventListener('storage', handleStorageChange);
+
+    // Fetch initial status
+    fetchAlertStatus();
+
+    // Set up polling interval
+    const pollingInterval = setInterval(fetchAlertStatus, 2000);
 
     // --- Get elements and set styles on mount ---
     const htmlElement = document.documentElement;
@@ -63,7 +69,7 @@ const DisplayPage = () => {
 
     // --- Cleanup function --- 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(pollingInterval);
       // Reset styles using the local variables captured by the closure
       htmlElement.style.backgroundColor = originalHtmlBg;
       htmlElement.style.height = originalHtmlHeight;

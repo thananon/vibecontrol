@@ -6,6 +6,9 @@ require('dotenv').config();
 const app = express();
 const port = 3000;
 
+// Global alert status that will be accessible by all users
+let globalAlertStatus = 'normal'; // Can be 'normal', 'mute', or 'suppress'
+
 // Enable CORS for all routes
 app.use(cors());
 app.use(express.json());
@@ -26,7 +29,15 @@ app.get('/', (req, res) => {
     endpoints: {
       setMute: 'POST /api/alerts/set-mute',
       setSuppress: 'POST /api/alerts/set-suppress',
+      getStatus: 'GET /api/alerts/status'
     }
+  });
+});
+
+// Public endpoint to get current alert status - no authentication required
+app.get('/api/alerts/status', (req, res) => {
+  res.json({
+    status: globalAlertStatus
   });
 });
 
@@ -99,6 +110,10 @@ app.post('/api/alerts/set-mute', async (req, res) => {
     });
 
     console.log('Set mute response:', response.data);
+    
+    // Update global status
+    globalAlertStatus = shouldMute ? 'mute' : 'normal';
+    
     // Assuming success if no error is thrown, Streamlabs might return specific data
     res.json({ success: true, details: response.data }); 
 
@@ -139,6 +154,10 @@ app.post('/api/alerts/set-suppress', async (req, res) => {
     });
 
     console.log('Set suppress response:', response.data);
+    
+    // Update global status
+    globalAlertStatus = shouldSuppress ? 'suppress' : 'normal';
+    
      // Assuming success if no error is thrown, Streamlabs might return specific data
     res.json({ success: true, details: response.data });
 
@@ -160,6 +179,7 @@ app.use((req, res) => {
       root: 'GET /',
       setMute: 'POST /api/alerts/set-mute',
       setSuppress: 'POST /api/alerts/set-suppress',
+      getStatus: 'GET /api/alerts/status',
       userInfo: 'GET /api/userinfo'
     }
   });

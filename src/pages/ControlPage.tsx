@@ -5,29 +5,33 @@ import muteIcon from '../assets/icons/mute.svg';
 import shieldIcon from '../assets/icons/shield.svg';
 import { getToken, logout } from '../services/auth';
 
-const LOCAL_STORAGE_KEY = 'vibecontrol_alert_status'; // Define key
-
-type LocalStateType = 'normal' | 'mute' | 'suppress';
+type AlertStateType = 'normal' | 'mute' | 'suppress';
 
 const ControlPage = () => {
-  // Initialize state from localStorage or default to 'normal'
-  const [localState, setLocalState] = useState<LocalStateType>(() => {
-    return (localStorage.getItem(LOCAL_STORAGE_KEY) as LocalStateType) || 'normal';
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Add loading state
+  const [localState, setLocalState] = useState<AlertStateType>('normal');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Write initial state to localStorage if not set
+  // Fetch current state from API on component mount
   useEffect(() => {
-    if (!localStorage.getItem(LOCAL_STORAGE_KEY)) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, 'normal');
-    }
-  }, []);
+    const fetchCurrentState = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/alerts/status');
+        if (response.data && response.data.status) {
+          setLocalState(response.data.status);
+        }
+      } catch (error) {
+        console.error('Error fetching alert status:', error);
+      }
+    };
 
-  const updateState = (newState: LocalStateType) => {
-    setLocalState(newState);
-    localStorage.setItem(LOCAL_STORAGE_KEY, newState); // Write to localStorage
-  }
+    fetchCurrentState();
+    
+    // Poll for state changes every 5 seconds
+    const intervalId = setInterval(fetchCurrentState, 5000);
+    
+    return () => clearInterval(intervalId);
+  }, []);
 
   const getIcon = () => {
     if (localState === 'mute') {
@@ -53,7 +57,6 @@ const ControlPage = () => {
     }
 
     const targetMuteState = localState !== 'mute'; // If not muted, mute it. If muted, unmute it.
-    const newState: LocalStateType = targetMuteState ? 'mute' : 'normal';
 
     try {
       const response = await axios.post(
@@ -68,7 +71,11 @@ const ControlPage = () => {
       );
       console.log('Set mute response:', response.data);
       if (response.data.success) {
-        updateState(newState); // Use the helper function
+        // Update the local state from the server response
+        const statusResponse = await axios.get('http://localhost:3000/api/alerts/status');
+        if (statusResponse.data && statusResponse.data.status) {
+          setLocalState(statusResponse.data.status);
+        }
       } else {
         console.error('Backend failed to set mute state:', response.data.details);
         // Optionally show an error message to the user
@@ -93,7 +100,6 @@ const ControlPage = () => {
     }
 
     const targetSuppressState = localState !== 'suppress'; // If not suppressed, suppress. If suppressed, unsuppress.
-    const newState: LocalStateType = targetSuppressState ? 'suppress' : 'normal';
 
     try {
       const response = await axios.post(
@@ -108,7 +114,11 @@ const ControlPage = () => {
       );
       console.log('Set suppress response:', response.data);
        if (response.data.success) {
-        updateState(newState); // Use the helper function
+        // Update the local state from the server response
+        const statusResponse = await axios.get('http://localhost:3000/api/alerts/status');
+        if (statusResponse.data && statusResponse.data.status) {
+          setLocalState(statusResponse.data.status);
+        }
       } else {
          console.error('Backend failed to set suppress state:', response.data.details);
          // Optionally show an error message to the user
@@ -138,7 +148,7 @@ const ControlPage = () => {
         
         {/* Current State Display - Based on localState */}
         <div className="bg-white rounded-lg p-8 mb-8 flex flex-col items-center">
-          <div className="text-lg font-semibold mb-4">Current State (Assumed)</div>
+          <div className="text-lg font-semibold mb-4">Current State</div>
           <div className="bg-gray-200 rounded-full p-4">
             {getIcon()} 
           </div>
