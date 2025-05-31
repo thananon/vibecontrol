@@ -86,26 +86,37 @@ const DisplayPage = () => {
     };
   }, []);
 
-  const getIcon = () => {
-    const iconContainerSize = "w-[500px] h-[500px]";
-    const imageClasses = "block w-full h-full";
-    if (displayStatus === 'mute') {
-      return (
+const getIcon = () => {
+  const iconContainerSize = "w-[500px] h-[500px]";
+  const imageClasses = "block w-full h-full";
+  const wrapperClasses = "flex items-center space-x-4"; // flex row + space between items
+
+  if (displayStatus === 'mute') {
+    return (
+      <div className={wrapperClasses}>
         <div className={iconContainerSize}>
           <img src={muteIcon} alt="Muted" className={imageClasses} />
         </div>
-      );
-    }
-    if (displayStatus === 'suppress') {
-      return (
+        <span className="text-xl font-semibold text-gray-700">Muted</span>
+      </div>
+    );
+  }
+
+  if (displayStatus === 'suppress') {
+    return (
+      <div className={wrapperClasses}>
         <div className={iconContainerSize}>
-           <img src={shieldIcon} alt="Suppressed" className={imageClasses} />
+          <img src={shieldIcon} alt="Suppressed" className={imageClasses} />
         </div>
-      );
-    }
-    // Return null for 'normal' state (blank display)
-    return null; 
-  };
+        <span className="text-xl font-semibold text-gray-700">Suppressed</span>
+      </div>
+    );
+  }
+
+  // Return null for 'normal' state (blank display)
+  return null;
+};
+
 
   return (
     // Use min-h-full instead of h-full for robustness
