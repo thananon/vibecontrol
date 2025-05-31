@@ -26,11 +26,11 @@ A web application for controlling Streamlabs alerts during live streams.
 4. Start the development server:
    ```bash
    npm run dev
-   ```
-   Start the development server with open url:
-   ```bash
-   npm run app
-   ```
+   ```  
+   Start the server with open url:  
+   ```bash  
+   npm run app  
+   ```  
 
 ## Usage
 
