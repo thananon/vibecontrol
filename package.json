@@ -4,12 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "setup": "npm install && npm install --prefix backend",
     "frontend": "vite",
-    "backend": "cd backend && node index.js",
-    "dev": "npm run app",
-    "app": "npx kill-port 3000 && concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "npm --prefix backend run start",
+    "dev": "npm run predev && concurrently -k -n BACKEND,FRONTEND -c yellow,cyan \"npm run backend\" \"npm run frontend\"",
+    "predev": "kill-port 3000 5173",
+    "app": "npm run dev",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --ext .js,.ts,.tsx,.jsx",
     "preview": "vite preview"
   },
   "dependencies": {
