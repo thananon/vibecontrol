@@ -97,7 +97,7 @@ const getIcon = () => {
         <div className={iconContainerSize}>
           <img src={muteIcon} alt="Muted" className={imageClasses} />
         </div>
-        <span className="text-xl font-semibold text-gray-700">Muted</span>
+        <span className="text-xl font-semibold text-white">Muted</span>
       </div>
     );
   }
@@ -108,7 +108,7 @@ const getIcon = () => {
         <div className={iconContainerSize}>
           <img src={shieldIcon} alt="Suppressed" className={imageClasses} />
         </div>
-        <span className="text-xl font-semibold text-gray-700">Suppressed</span>
+        <span className="text-xl font-semibold text-white">Suppressed</span>
       </div>
     );
   }
