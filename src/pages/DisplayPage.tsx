@@ -58,6 +58,11 @@ const DisplayPage = () => {
     htmlElement.style.height = '100%';
     bodyElement.style.backgroundColor = greenColor;
     bodyElement.style.height = '100%';
+
+    /* in case you want to set the background to transparent i dont know i never use steamlab
+    htmlElement.style.backgroundColor = 'transparent';
+    bodyElement.style.backgroundColor = 'transparent';
+    */
     bodyElement.style.minHeight = '100%';
     if (rootElement) {
       rootElement.style.height = '100%';
