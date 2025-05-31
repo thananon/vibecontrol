@@ -58,6 +58,11 @@ const DisplayPage = () => {
     htmlElement.style.height = '100%';
     bodyElement.style.backgroundColor = greenColor;
     bodyElement.style.height = '100%';
+
+    /* in case you want to set the background to transparent i dont know i never use steamlab
+    htmlElement.style.backgroundColor = 'transparent';
+    bodyElement.style.backgroundColor = 'transparent';
+    */
     bodyElement.style.minHeight = '100%';
     if (rootElement) {
       rootElement.style.height = '100%';
@@ -86,26 +91,37 @@ const DisplayPage = () => {
     };
   }, []);
 
-  const getIcon = () => {
-    const iconContainerSize = "w-[500px] h-[500px]";
-    const imageClasses = "block w-full h-full";
-    if (displayStatus === 'mute') {
-      return (
+const getIcon = () => {
+  const iconContainerSize = "w-[500px] h-[500px]";
+  const imageClasses = "block w-full h-full";
+  const wrapperClasses = "flex items-center space-x-4"; // flex row + space between items
+
+  if (displayStatus === 'mute') {
+    return (
+      <div className={wrapperClasses}>
         <div className={iconContainerSize}>
           <img src={muteIcon} alt="Muted" className={imageClasses} />
         </div>
-      );
-    }
-    if (displayStatus === 'suppress') {
-      return (
+        <span className="text-xl font-semibold text-white">Muted</span>
+      </div>
+    );
+  }
+
+  if (displayStatus === 'suppress') {
+    return (
+      <div className={wrapperClasses}>
         <div className={iconContainerSize}>
-           <img src={shieldIcon} alt="Suppressed" className={imageClasses} />
+          <img src={shieldIcon} alt="Suppressed" className={imageClasses} />
         </div>
-      );
-    }
-    // Return null for 'normal' state (blank display)
-    return null; 
-  };
+        <span className="text-xl font-semibold text-white">Suppressed</span>
+      </div>
+    );
+  }
+
+  // Return null for 'normal' state (blank display)
+  return null;
+};
+
 
   return (
     // Use min-h-full instead of h-full for robustness
