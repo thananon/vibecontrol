@@ -27,6 +27,10 @@ A web application for controlling Streamlabs alerts during live streams.
    ```bash
    npm run dev
    ```
+   Start the development server with open url:
+   ```bash
+   npm run app
+   ```
 
 ## Usage
 

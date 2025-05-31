@@ -8,8 +8,9 @@
     "frontend": "vite",
     "backend": "npm --prefix backend run start",
     "dev": "npm run predev && concurrently -k -n BACKEND,FRONTEND -c yellow,cyan \"npm run backend\" \"npm run frontend\"",
+    "open_url": "npx open-cli http://localhost:5173",
     "predev": "kill-port 3000 5173",
-    "app": "npm run dev",
+    "app": "concurrently -k \"npm run dev\" \"npx wait-on http://localhost:5173 && npm run open_url\"",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext .js,.ts,.tsx,.jsx",
     "preview": "vite preview"
@@ -33,6 +34,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "kill-port": "^2.0.1",
+    "open-cli": "^8.0.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.4",
     "typescript": "~5.7.2",
